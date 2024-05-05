@@ -10,7 +10,7 @@ def generator_numbers(text: str):
 
 def sum_profit(text, fun_gen):
     res = 0
-    for i in generator_numbers(text):
+    for i in fun_gen(text):
         res += float(i)
     return res
 

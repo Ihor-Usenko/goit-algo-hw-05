@@ -4,34 +4,34 @@ def parse_input(user_input):
     return cmd, *args
 
 
-def input_error_add(func):
+
+
+def input_error(func):
     def inner(*args, **kwargs):
         try:
             return func(*args, **kwargs)
+        except IndexError:
+            return "You have't entered a contact name or phone!"
+        except KeyError:
+            return "Contact is not found!"
         except ValueError:
             return "Give me name and phone please."
+
 
     return inner
 
 
-@input_error_add
+@input_error
 def add_contact(args, contacts):
     name, phone = args
     contacts[name] = phone
     return "Contact added."
 
 
-def input_error_change(func):
-    def inner(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except IndexError:
-            return "Give me name and phone please."
-
-    return inner
 
 
-@input_error_change
+
+@input_error
 def change_phone(args, contacts):
     if args[0] in contacts:
         contacts[args[0]] = args[1]
@@ -40,24 +40,13 @@ def change_phone(args, contacts):
         return f"Contact '{args[0]}' is not found!"
 
 
-def input_error_phone(func):
-    def inner(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except IndexError:
-            return "You have't entered a contact name!"
-        except KeyError:
-            return "Contact is not found!"
-
-    return inner
 
 
-@input_error_phone
+
+@input_error
 def show_phone(args, contacts):
     if args[0] in contacts:
         return contacts[args[0]]
-    else:
-        raise KeyError
 
 
 def show_all(contacts):
@@ -69,6 +58,9 @@ def main():
     print("Welcome to the assistant bot!")
     while True:
         user_input = input("Enter a command: ").lower()
+        if not user_input:
+            print("You didn't enter anything")
+            continue
         command, *args = parse_input(user_input)
 
         if command in ["close", "exit"]:
