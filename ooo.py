@@ -1,0 +1,68 @@
+from collections import UserDict
+
+
+class Field:
+    def init(self, value):
+        self.value = value
+
+    def str(self):
+        return str(self.value)
+
+
+class Name(Field):
+    def init(self, value):
+        super().init(value)
+
+
+class Phone(Field):
+    def init(self, value):
+        if not self.validate(value):
+            raise ValueError("Phone number must be 10 digits.")
+        super().init(value)
+
+    @staticmethod
+    def validate(value):
+        return value.isdigit() and len(value) == 10
+
+
+class Record:
+    def init(self, name):
+        self.name = Name(name)
+        self.phones = []
+
+    def add_phone(self, phone):
+        self.phones.append(Phone(phone))
+
+    def remove_phone(self, phone):
+        self.phones = [p for p in self.phones if p.value != phone]
+
+    def edit_phone(self, old_phone, new_phone):
+        for i, phone in enumerate(self.phones):
+            if phone.value == old_phone:
+                self.phones[i] = Phone(new_phone)
+                break
+
+    def find_phone(self, phone):
+        for p in self.phones:
+            if p.value == phone:
+                return p
+        return None
+
+    def str(self):
+        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
+
+
+class AddressBook(UserDict):
+    def add_record(self, record):
+        self.data[record.name.value] = record
+
+    def find(self, name):
+        return self.data.get(name)
+
+    def delete(self, name):
+        if name in self.data:
+            del self.data[name]
+
+
+book = AddressBook()
+john_record = Record("John")
